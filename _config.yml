@@ -1,0 +1,20 @@
+# GitHub Pages and Jekyll Configuration
+
+# Disable Jekyll processing for GitHub Pages
+# This prevents GitHub from trying to process our Vite build output
+jekyll: false
+
+# Include all files and directories
+include:
+  - _*
+  - .nojekyll
+
+# Don't ignore node_modules in GitHub Pages (not applicable but good practice)
+exclude:
+  - node_modules/
+  - .git/
+  - .gitignore
+  - package*.json
+  - README.md
+  - vite.config.ts
+  - tsconfig.json

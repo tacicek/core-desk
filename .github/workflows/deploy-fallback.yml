@@ -1,0 +1,133 @@
+name: Deploy to GitHub Pages (Fallback)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - 'README.md'
+      - 'docs/**'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages-fallback"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js with extended timeout
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        registry-url: 'https://registry.npmjs.org'
+        
+    - name: Configure npm for reliability
+      run: |
+        npm config set registry https://registry.npmjs.org/
+        npm config set fund false
+        npm config set audit false
+        npm config set progress false
+        npm config set maxsockets 1
+        npm config set timeout 600000
+        npm config set fetch-retries 5
+        npm config set fetch-retry-factor 3
+        npm config set fetch-retry-mintimeout 15000
+        npm config set fetch-retry-maxtimeout=120000
+        
+    - name: Clear npm cache
+      run: npm cache clean --force
+      
+    - name: Install dependencies with multiple strategies
+      run: |
+        echo "Trying npm ci with retries..."
+        for i in {1..5}; do
+          echo "Install attempt $i/5..."
+          if timeout 600 npm ci --prefer-offline --no-audit --no-fund --maxsockets 1; then
+            echo "✅ npm ci succeeded on attempt $i"
+            break
+          else
+            echo "❌ npm ci failed on attempt $i"
+            if [ $i -eq 5 ]; then
+              echo "All npm ci attempts failed, trying npm install..."
+              if timeout 600 npm install --prefer-offline --no-audit --no-fund --maxsockets 1; then
+                echo "✅ npm install succeeded as fallback"
+                break
+              else
+                echo "❌ All install methods failed"
+                exit 1
+              fi
+            fi
+            echo "Waiting 45 seconds before retry..."
+            sleep 45
+          fi
+        done
+        
+    - name: Verify installation
+      run: |
+        echo "Node version: $(node --version)"
+        echo "NPM version: $(npm --version)"
+        echo "Checking package.json..."
+        ls -la package.json
+        echo "Checking node_modules..."
+        ls -la node_modules/ | head -10
+        
+    - name: Build application with error handling
+      run: |
+        echo "Starting build process..."
+        timeout 600 npm run build || {
+          echo "Build failed, checking for common issues..."
+          echo "Disk space:"
+          df -h
+          echo "Memory usage:"
+          free -h
+          echo "Node processes:"
+          ps aux | grep node || true
+          exit 1
+        }
+      env:
+        VITE_SUPABASE_URL: https://supabasekong.g53.ch
+        VITE_SUPABASE_ANON_KEY: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzdXBhYmFzZSIsImlhdCI6MTc1NjA1NDUwMCwiZXhwIjo0OTExNzI4MTAwLCJyb2xlIjoiYW5vbiJ9.3HimbWxdolmrpZbbXuvHEC_8Mm1_wX0FJ3xnqmaOyzQ
+        NODE_ENV: production
+        VITE_APP_NAME: Cozy Invoice
+        VITE_APP_VERSION: 1.0.0
+        CI: true
+        
+    - name: Verify build output
+      run: |
+        echo "Build completed, checking output..."
+        ls -la dist/
+        echo "Index.html exists:" 
+        ls -la dist/index.html
+        echo "Assets directory:"
+        ls -la dist/assets/ | head -5
+        
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+      
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: ./dist
+        
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
