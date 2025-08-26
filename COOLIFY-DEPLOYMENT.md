@@ -1,176 +1,139 @@
-# 🚀 Cozy Invoice - Coolify Deployment Guide
+# 🚀 Coolify Deployment Guide
 
-This guide will help you deploy the Cozy Invoice system to your Coolify-hosted Supabase instance.
+Bu rehber, Cozy Invoice sistemini Coolify'a nasıl deploy edeceğinizi açıklar.
 
-## 📋 Prerequisites
+## 📋 Ön Gereksinimler
 
-- ✅ Coolify instance running
-- ✅ Supabase deployed on Coolify at `https://supabasekong.g53.ch`
-- ✅ GitHub repository: `https://github.com/tacicek/Rechnungssytem.git`
+- Coolify kurulu ve çalışır durumda
+- Git repository erişimi
+- Supabase projesi ve API anahtarları
 
-## 🗄️ Step 1: Database Setup
+## 🔧 Coolify Kurulum Adımları
 
-### Option A: Using Supabase SQL Editor (Recommended)
+### 1. Yeni Uygulama Oluşturma
 
-1. Open your Supabase dashboard at `https://supabasekong.g53.ch`
-2. Go to **SQL Editor**
-3. Create a new query
-4. Copy and paste the entire content from `database-setup.sql`
-5. Click **Run** to execute the script
+1. **Coolify Dashboard**'a giriş yapın
+2. **"New Application"** butonuna tıklayın
+3. **Source** olarak **"Git"** seçin
+4. **Repository URL**'ini girin: `https://github.com/tacicek/Rechnungssytem.git`
 
-### Option B: Using Supabase CLI
+### 2. Build Konfigürasyonu
+
+```yaml
+# Build Command
+npm run build
+
+# Build Output Directory
+dist
+
+# Node.js Version
+18.x
+```
+
+### 3. Environment Variables
+
+Aşağıdaki environment variable'ları ekleyin:
 
 ```bash
-# Install Supabase CLI
-npm install -g supabase
+# Supabase Configuration
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
-# Login to your Supabase instance
-supabase login
+# OpenAI (Optional)
+OPENAI_API_KEY=your_openai_api_key
 
-# Connect to your project
-supabase link --project-ref your-project-id
+# Resend Email (Optional)
+RESEND_API_KEY=your_resend_api_key
 
-# Run the setup script
-supabase db push
+# NODE_ENV
+NODE_ENV=production
 ```
 
-## 🔐 Step 2: Authentication Setup
+### 4. Port Konfigürasyonu
 
-In your Supabase dashboard:
+- **Port**: 3000 (veya tercih ettiğiniz port)
+- **Health Check Path**: `/`
 
-1. Go to **Authentication → Settings**
-2. Enable **Email** provider
-3. Configure **Site URL**: Your final Coolify deployment URL
-4. Configure **Redirect URLs**: Add your deployment domain
-5. **Disable** email confirmations for easier testing (optional)
+## 🚀 Deployment
 
-## ⚙️ Step 3: Coolify Configuration
+### Otomatik Deployment
 
-### Repository Settings
-```
-Repository URL: https://github.com/tacicek/Rechnungssytem.git
-Branch: main
-```
+1. **Repository'ye push** yapın
+2. Coolify otomatik olarak yeni deployment'ı başlatacak
+3. Build süreci tamamlandığında uygulama canlı olacak
 
-### Build Settings
-```
-Build Command: npm run build
-Output Directory: dist
-Node Version: 18
-```
+### Manuel Deployment
+
+1. **"Deploy"** butonuna tıklayın
+2. Build sürecini takip edin
+3. Deployment tamamlandığında **"Visit"** butonuna tıklayın
+
+## 📊 Monitoring
+
+### Health Checks
+
+- **Path**: `/`
+- **Interval**: 30 saniye
+- **Timeout**: 10 saniye
+
+### Logs
+
+- **Build Logs**: Build sürecini takip edin
+- **Runtime Logs**: Uygulama çalışma loglarını görüntüleyin
+
+## 🔒 Güvenlik
+
+### SSL/TLS
+
+- **Auto SSL**: Coolify otomatik SSL sertifikası sağlar
+- **Custom Domain**: Kendi domain'inizi ekleyebilirsiniz
 
 ### Environment Variables
 
-Set these in Coolify's environment variables section:
+- Hassas bilgileri environment variable olarak saklayın
+- API anahtarlarını asla kod içinde tutmayın
 
-```bash
-# Required - Supabase Configuration
-VITE_SUPABASE_URL=https://supabasekong.g53.ch
-VITE_SUPABASE_ANON_KEY=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzdXBhYmFzZSIsImlhdCI6MTc1NjA1NDUwMCwiZXhwIjo0OTExNzI4MTAwLCJyb2xlIjoiYW5vbiJ9.3HimbWxdolmrpZbbXuvHEC_8Mm1_wX0FJ3xnqmaOyzQ
+## 🛠️ Troubleshooting
 
-# Application Settings
-NODE_ENV=production
-VITE_APP_NAME=Cozy Invoice
-VITE_APP_VERSION=1.0.0
+### Build Hataları
 
-# Optional - AI Features
-# VITE_OPENAI_API_KEY=your_openai_api_key_here
+1. **Node.js Version**: 18.x kullandığınızdan emin olun
+2. **Dependencies**: `npm install` komutunu çalıştırın
+3. **Build Output**: `dist` klasörünün oluştuğunu kontrol edin
 
-# Optional - Email Features  
-# VITE_RESEND_API_KEY=your_resend_api_key_here
-```
+### Runtime Hataları
 
-## 🔧 Step 4: First Time Setup
+1. **Environment Variables**: Tüm gerekli değişkenlerin set edildiğini kontrol edin
+2. **Supabase Connection**: Supabase bağlantısını test edin
+3. **Port Conflicts**: Port çakışması olmadığından emin olun
 
-After successful deployment:
+### Performance Optimizasyonu
 
-1. **Access your application** via the Coolify-provided URL
-2. **Register first user**:
-   - Click "Sign Up"
-   - Enter email and password
-   - This will be your admin account
+1. **Build Optimization**: Vite build optimizasyonları aktif
+2. **Code Splitting**: Otomatik code splitting
+3. **PWA Support**: Progressive Web App özellikleri
 
-3. **Create your vendor/company**:
-   - The system will prompt you to create a vendor profile
-   - Fill in your company details
-   - Upload your logo (optional)
+## 📱 PWA Özellikleri
 
-4. **Configure company settings**:
-   - Go to Settings → Company
-   - Enter your complete business information
-   - Set up invoice templates and terms
+- **Offline Support**: Service Worker ile offline çalışma
+- **App Installation**: Mobil cihazlara kurulum
+- **Push Notifications**: Bildirim desteği (opsiyonel)
 
-## 🎯 Step 5: Initial Data Setup
+## 🔄 Auto-Update
 
-### Add Your First Customer
-1. Go to **Customers** page
-2. Click **"+ Neuer Kunde"**
-3. Enter customer details
-4. Save
+- **Git Push**: Her push'ta otomatik deployment
+- **Branch Protection**: Main branch koruması
+- **Rollback**: Önceki versiyona geri dönme
 
-### Add Your First Product/Service
-1. Go to **Products** page  
-2. Click **"+ Neues Produkt"**
-3. Enter product/service details
-4. Set pricing and tax rates
-5. Save
+## 📞 Support
 
-### Create Your First Invoice
-1. Go to **Invoices** page
-2. Click **"+ Neue Rechnung"** 
-3. Select customer
-4. Add products/services
-5. Generate PDF and send
+Sorun yaşarsanız:
 
-## 📊 System Features Available
+1. **Coolify Logs**'u kontrol edin
+2. **Build Output**'u inceleyin
+3. **Environment Variables**'ı doğrulayın
+4. **GitHub Issues**'da yardım arayın
 
-✅ **Dashboard** - Financial overview and statistics  
-✅ **Invoicing** - Create, manage, and send invoices with Swiss QR codes  
-✅ **Customers** - Complete CRM functionality  
-✅ **Products** - Product catalog with categories  
-✅ **Offers** - Quotation management  
-✅ **Expenses** - Business expense tracking  
-✅ **Revenue** - Revenue tracking and reporting  
-✅ **Reports** - Tax and financial reports  
-✅ **Multi-device** - Responsive design for mobile and desktop  
+---
 
-## 🔍 Troubleshooting
-
-### Build Errors
-- Check Node.js version is 18+
-- Verify all environment variables are set
-- Check build logs in Coolify
-
-### Database Connection Issues
-- Verify `VITE_SUPABASE_URL` is correct
-- Check `VITE_SUPABASE_ANON_KEY` is valid
-- Ensure database setup script ran successfully
-
-### Authentication Issues
-- Check Supabase Auth settings
-- Verify redirect URLs match your domain
-- Check RLS policies are active
-
-### Permission Errors
-- Ensure user is assigned to a vendor
-- Check RLS policies in database
-- Verify user profile exists
-
-## 🆘 Support
-
-If you encounter issues:
-
-1. Check Coolify deployment logs
-2. Check browser console for errors
-3. Verify Supabase connection in Network tab
-4. Check database tables were created correctly
-
-## 🎉 Success!
-
-Your Cozy Invoice system should now be running successfully on Coolify with your own Supabase instance!
-
-**Next Steps:**
-- Customize your invoice templates
-- Set up automated backups
-- Configure email notifications (optional)
-- Add more users to your vendor account
+**🎉 Başarılı deployment!** Sisteminiz artık Coolify'da çalışıyor.

@@ -529,9 +529,9 @@ Dieses Projekt ist unter der MIT-Lizenz lizenziert. Details finden Sie in der [L
 
 Ein modernes, webbasiertes Rechnungssystem für kleine Unternehmen und Freelancer mit erweiterten Produktmanagement-Funktionen.
 
-## 🚀 Live Demo
+## 🚀 Deployment
 
-Die Anwendung ist automatisch bereitgestellt unter: `https://tacicek.github.io/Rechnungssytem/`
+Das System ist für Coolify deployment konfiguriert.
 
 ## ✨ Funktionen
 
@@ -564,7 +564,7 @@ Die Anwendung ist automatisch bereitgestellt unter: `https://tacicek.github.io/R
 
 ## 🔧 Lokale Entwicklung
 
-```
+```bash
 # Repository klonen
 git clone https://github.com/tacicek/Rechnungssytem.git
 cd Rechnungssytem
@@ -579,18 +579,14 @@ npm run dev
 npm run build
 ```
 
-## 🚀 Automatische Deployments
+## 🚀 Coolify Deployment
 
-Das System ist für automatische Deployments konfiguriert:
-
-1. **Push zu main/master** → Automatisches Deployment zu GitHub Pages
-2. **Pull Requests** → Automatische Build-Überprüfung
-3. **Live unter**: `https://tacicek.github.io/Rechnungssytem/`
+Das System ist für Coolify deployment konfiguriert:
 
 ### Deployment-Workflow:
 - ✅ Code wird automatisch gebaut
 - ✅ Tests und Lint-Checks werden ausgeführt  
-- ✅ Deployment zu GitHub Pages
+- ✅ Deployment zu Coolify
 - ✅ PWA-fähig mit Service Worker
 
 ## 📱 Progressive Web App (PWA)

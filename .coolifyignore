@@ -1,0 +1,59 @@
+# Development files
+node_modules/
+.env*
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+build/
+.next/
+.nuxt/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Testing
+coverage/
+.nyc_output/
+test/
+e2e/
+__tests__/
+*.test.*
+*.spec.*
+
+# Documentation
+README.md
+*.md
+docs/
+
+# Configuration files
+.eslintrc*
+.prettierrc*
+.editorconfig
+tsconfig.json
+vite.config.ts
+tailwind.config.ts
+
+# Dependencies
+package-lock.json
+yarn.lock
+bun.lockb
+
+# Misc
+.cache/
+.parcel-cache/
+.temp/

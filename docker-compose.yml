@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  cozy-invoice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - cozy-network
+
+  # Optional: Supabase local development
+  # supabase:
+  #   image: supabase/supabase-local
+  #   ports:
+  #     - "5432:5432"
+  #     - "54322:54322"
+  #   environment:
+  #     POSTGRES_PASSWORD: your_password
+  #   volumes:
+  #     - supabase_data:/var/lib/postgresql/data
+  #   networks:
+  #     - cozy-network
+
+networks:
+  cozy-network:
+    driver: bridge
+
+# volumes:
+#   supabase_data:
