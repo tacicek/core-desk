@@ -39,5 +39,20 @@ Thumbs.db
 
 # Build artifacts
 .vercel.env
+
+# Environment files
 .env
-.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Coolify specific
+.coolify
+
+# GitHub Actions (no longer needed)
+.github/
+
+# Deployment files
+vercel.json
+netlify.toml
