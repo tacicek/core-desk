@@ -93,3 +93,11 @@ pids
 
 # Coolify specific
 .coolify
+
+# Supabase Edge Functions (Deno - not compatible with Node.js build)
+supabase/functions/
+supabase/migrations/
+supabase/config.toml
+
+# GitHub Actions (no longer needed)
+.github/
