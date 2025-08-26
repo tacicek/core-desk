@@ -6,7 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: process.env.NODE_ENV === 'production' ? '/Rechnungssytem/' : '/',
+  base: process.env.NODE_ENV === 'production' ? '/Rechnung_2.0/' : '/',
   plugins: [
     react(),
     compression({
