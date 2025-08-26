@@ -1,3 +1,4 @@
+import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,6 +9,8 @@ import { AdminLayout } from "./components/layout/AdminLayout";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { VendorProvider } from "./contexts/VendorContext";
 import { useIsAdmin } from "./hooks/useIsAdmin";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import AuthErrorBoundary from "./components/AuthErrorBoundary";
 import AuthPage from "./pages/AuthPage";
 import AdminAuthPage from "./pages/AdminAuthPage";
 import LandingPage from "./pages/LandingPage";
@@ -40,6 +43,7 @@ import PayrollManagement from "./pages/PayrollManagement";
 import Tax from "./pages/Tax";
 import VendorManagement from "./pages/VendorManagement";
 import AdminDashboard from "./pages/AdminDashboard";
+import SetupPage from "./pages/SetupPage";
 
 // Separate Admin App Component
 function AdminApp() {
@@ -104,6 +108,14 @@ function AppRoutes() {
         <Route index element={<AdminApp />} />
       </Route>
       
+      {/* Consolidated Setup Route - Single point for all auth issues */}
+      <Route path="/setup" element={<SetupPage />} />
+      <Route path="/auth-setup" element={<SetupPage />} />
+      <Route path="/emergency-fix" element={<SetupPage />} />
+      <Route path="/nuclear-fix" element={<SetupPage />} />
+      <Route path="/fix-auth" element={<SetupPage />} />
+      <Route path="/auth-repair" element={<SetupPage />} />
+      
       {/* Public Routes */}
       <Route path="/" element={
         user ? <Navigate to="/dashboard" replace /> : <LandingPage />
@@ -134,33 +146,71 @@ function AppRoutes() {
 const queryClient = new QueryClient();
 
 const App = () => {
-  console.log('App component rendering...');
+  console.log('🎨 App component rendering...');
   
-  try {
+  // Add error boundary for the entire app
+  const [hasError, setHasError] = React.useState(false);
+  
+  React.useEffect(() => {
+    console.log('🎨 App component mounted successfully');
+    
+    // Global error handler
+    const handleError = (event: ErrorEvent) => {
+      console.error('🚨 Global error caught:', event.error);
+      setHasError(true);
+    };
+    
+    window.addEventListener('error', handleError);
+    
+    return () => {
+      window.removeEventListener('error', handleError);
+    };
+  }, []);
+  
+  if (hasError) {
     return (
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <AuthProvider>
-              <VendorProvider>
-                <AppRoutes />
-              </VendorProvider>
-            </AuthProvider>
-          </BrowserRouter>
-        </TooltipProvider>
-      </QueryClientProvider>
-    );
-  } catch (error) {
-    console.error('App render error:', error);
-    return (
-      <div style={{ padding: '20px', color: 'red' }}>
-        <h1>Uygulama Hatası</h1>
-        <p>Bir hata oluştu: {error instanceof Error ? error.message : 'Bilinmeyen hata'}</p>
+      <div className="min-h-screen flex items-center justify-center bg-red-50 p-4">
+        <div className="bg-white p-8 rounded-lg shadow-lg text-center max-w-md">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">⚠️ Error</h1>
+          <p className="text-gray-600 mb-4">Something went wrong with the application.</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-2"
+          >
+            🔄 Reload
+          </button>
+          <a 
+            href="/setup" 
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 inline-block"
+          >
+            🔧 Setup
+          </a>
+        </div>
       </div>
     );
   }
+  
+  return (
+    <ErrorBoundary>
+      <AuthErrorBoundary>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <ErrorBoundary>
+                <AuthProvider>
+                  <VendorProvider>
+                    <AppRoutes />
+                  </VendorProvider>
+                </AuthProvider>
+              </ErrorBoundary>
+            </BrowserRouter>
+          </TooltipProvider>
+        </QueryClientProvider>
+      </AuthErrorBoundary>
+    </ErrorBoundary>
+  );
 };
 
 export default App;

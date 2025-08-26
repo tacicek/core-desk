@@ -72,11 +72,31 @@ export default function AuthPage() {
     const { error } = await signIn(email, password);
     
     if (error) {
-      toast({
-        title: t('auth.signInError'),
-        description: error.message,
-        variant: 'destructive',
-      });
+      // Show special message for invalid credentials
+      if (error.message.includes('Invalid login credentials') || error.message.includes('ungültige')) {
+        toast({
+          title: 'Login Problem Detected',
+          description: (
+            <div className="space-y-2">
+              <p>{error.message}</p>
+              <button 
+                onClick={() => window.location.href = '/setup'}
+                className="text-blue-600 underline text-sm"
+              >
+                🔧 Click here to fix this issue
+              </button>
+            </div>
+          ),
+          variant: 'destructive',
+          duration: 10000,
+        });
+      } else {
+        toast({
+          title: t('auth.signInError'),
+          description: error.message,
+          variant: 'destructive',
+        });
+      }
     } else {
       toast({
         title: t('auth.signInSuccess'),

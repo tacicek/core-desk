@@ -38,4 +38,6 @@ supabase/logs
 Thumbs.db
 
 # Build artifacts
-.vercel
+.vercel.env
+.env
+.env
