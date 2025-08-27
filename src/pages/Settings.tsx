@@ -12,11 +12,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { CompanySettings } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { SecureApiKeyInput } from "@/components/SecureApiKeyInput";
+import { useErrorReporting } from "@/components/ErrorBoundary";
 // Migration manager removed
 
 export default function Settings() {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { reportError } = useErrorReporting();
   const [settings, setSettings] = useState<CompanySettings>({
     name: '',
     address: '',
@@ -51,13 +53,22 @@ export default function Settings() {
     paymentReceived: false
   });
 
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     // Load settings from Supabase on component mount
     const loadSettings = async () => {
       try {
+        setError(null);
+        setLoading(true);
+        
         // Get current user's vendor ID
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        if (!user) {
+          setError('Benutzer nicht angemeldet');
+          return;
+        }
 
         const { data: profile } = await supabase
           .from('user_profiles')
@@ -65,7 +76,10 @@ export default function Settings() {
           .eq('user_id', user.id)
           .single();
 
-        if (!profile) return;
+        if (!profile) {
+          setError('Benutzerprofil nicht gefunden');
+          return;
+        }
 
         // Load company settings from Supabase
         const { data: supabaseSettings } = await supabase
@@ -125,6 +139,10 @@ export default function Settings() {
         }
       } catch (error) {
         console.error('Error loading company settings:', error);
+        setError('Fehler beim Laden der Einstellungen');
+        reportError(error, 'Settings page - loadSettings');
+      } finally {
+        setLoading(false);
       }
     };
     
@@ -300,6 +318,39 @@ export default function Settings() {
   };
 
   const migrationCompleted = localStorage.getItem('supabase_migration_completed');
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-8">
+          <div className="text-red-500 text-6xl mb-4">⚠️</div>
+          <h1 className="text-2xl font-bold text-red-600 mb-2">Fehler beim Laden</h1>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <div className="space-x-2">
+            <Button onClick={() => window.location.reload()}>
+              🔄 Seite neu laden
+            </Button>
+            <Button variant="outline" onClick={() => navigate('/dashboard')}>
+              🏠 Zurück zum Dashboard
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Einstellungen werden geladen...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
