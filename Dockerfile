@@ -1,4 +1,5 @@
 # Multi-stage build for production
+# This Dockerfile explicitly tells Coolify to use Node.js instead of Deno
 FROM node:18-alpine AS builder
 
 # Set working directory
@@ -10,7 +11,7 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci --only=production
 
-# Copy source code
+# Copy source code (excluding Supabase functions to prevent Deno detection)
 COPY . .
 
 # Build the application
