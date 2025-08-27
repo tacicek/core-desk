@@ -4,16 +4,34 @@ import { Product, CompanySettings } from "@/types";
 export const productStorage = {
   async getAll(): Promise<Product[]> {
     try {
+      console.log('productStorage.getAll() called');
       const data = localStorage.getItem('invoice-app-products');
-      if (!data) return [];
+      console.log('Raw localStorage data:', data);
+      
+      if (!data) {
+        console.log('No data found, returning empty array');
+        return [];
+      }
       
       const parsedData = JSON.parse(data);
-      return Array.isArray(parsedData) ? parsedData : [];
+      console.log('Parsed data:', parsedData);
+      
+      if (Array.isArray(parsedData)) {
+        console.log('Data is array, returning:', parsedData);
+        return parsedData;
+      } else {
+        console.log('Data is not array, returning empty array');
+        return [];
+      }
     } catch (error) {
       console.error('Error loading products from localStorage:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('Error details:', errorMessage);
+      
       // Clear corrupted data
       try {
         localStorage.removeItem('invoice-app-products');
+        console.log('Corrupted data removed from localStorage');
       } catch (removeError) {
         console.error('Error removing corrupted localStorage data:', removeError);
       }

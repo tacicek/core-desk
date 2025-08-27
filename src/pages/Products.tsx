@@ -114,8 +114,10 @@ export default function Products() {
   // Load products with error handling
   const loadProducts = useCallback(async () => {
     try {
+      console.log('Loading products...');
       setLoading(true);
       const allProducts = await productStorage.getAll();
+      console.log('Products loaded:', allProducts);
       setProducts(allProducts);
       if (selectedCategory) {
         const filtered = allProducts.filter(product => product.category === selectedCategory);
@@ -125,11 +127,14 @@ export default function Products() {
       }
     } catch (error) {
       console.error('Error loading products:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('Error details:', errorMessage);
       toast({
         title: "Fehler",
-        description: "Produkte konnten nicht geladen werden.",
+        description: `Produkte konnten nicht geladen werden: ${errorMessage}`,
         variant: "destructive"
       });
+      setComponentError(`Error loading products: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -332,6 +337,9 @@ export default function Products() {
   const handleOpenDialog = useCallback((product?: Product) => {
     try {
       console.log('Opening dialog for product:', product);
+      console.log('Current formData state:', formData);
+      console.log('Current isDialogOpen state:', isDialogOpen);
+      
       if (product) {
         setEditingProduct(product);
         setFormData({
@@ -347,12 +355,12 @@ export default function Products() {
         resetForm();
       }
       setIsDialogOpen(true);
-      console.log('Dialog should be open now');
+      console.log('Dialog should be open now, isDialogOpen:', true);
     } catch (error) {
       console.error('Error opening dialog:', error);
-      setComponentError('Error opening product dialog');
+      setComponentError('Error opening product dialog: ' + (error instanceof Error ? error.message : 'Unknown error'));
     }
-  }, [resetForm]);
+  }, [resetForm, formData, isDialogOpen]);
 
   const handleCloseDialog = useCallback(() => {
     setIsDialogOpen(false);
