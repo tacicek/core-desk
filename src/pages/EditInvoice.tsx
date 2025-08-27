@@ -219,7 +219,7 @@ export default function EditInvoice() {
     setEmailModalOpen(true);
   };
 
-  const handleSendInvoiceEmail = async (emailData: { to: string; subject: string; message: string }) => {
+  const handleSendInvoiceEmail = async (emailData: { from: string; to: string; subject: string; message: string }) => {
     if (!invoice) return;
 
     try {

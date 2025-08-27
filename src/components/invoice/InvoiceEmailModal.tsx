@@ -12,10 +12,11 @@ interface InvoiceEmailModalProps {
   invoice: Invoice | null;
   isOpen: boolean;
   onClose: () => void;
-  onSend: (emailData: { to: string; subject: string; message: string }) => Promise<void>;
+  onSend: (emailData: { from: string; to: string; subject: string; message: string }) => Promise<void>;
 }
 
 export function InvoiceEmailModal({ invoice, isOpen, onClose, onSend }: InvoiceEmailModalProps) {
+  const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
@@ -45,6 +46,9 @@ export function InvoiceEmailModal({ invoice, isOpen, onClose, onSend }: InvoiceE
           .single();
 
         if (settings) {
+          // Set sender email (user's email)
+          setFrom(user.email || '');
+          
           // Set recipient email
           setTo(invoice.customerEmail || '');
 
@@ -73,6 +77,7 @@ export function InvoiceEmailModal({ invoice, isOpen, onClose, onSend }: InvoiceE
       } catch (error) {
         console.error('Error loading email template:', error);
         // Set default values
+        setFrom(user?.email || '');
         setTo(invoice.customerEmail || '');
         setSubject(`Rechnung ${invoice.number}`);
         setMessage(`Sehr geehrte Damen und Herren,\n\nanbei erhalten Sie die Rechnung ${invoice.number}.\n\nMit freundlichen Grüssen`);
@@ -85,13 +90,13 @@ export function InvoiceEmailModal({ invoice, isOpen, onClose, onSend }: InvoiceE
   }, [isOpen, invoice]);
 
   const handleSend = async () => {
-    if (!to || !subject || !message) {
+    if (!from || !to || !subject || !message) {
       return;
     }
 
     setLoading(true);
     try {
-      await onSend({ to, subject, message });
+      await onSend({ from, to, subject, message });
       onClose();
     } catch (error) {
       console.error('Error sending email:', error);
@@ -115,6 +120,17 @@ export function InvoiceEmailModal({ invoice, isOpen, onClose, onSend }: InvoiceE
         </DialogHeader>
 
         <div className="space-y-4">
+          <div>
+            <Label htmlFor="from">Von</Label>
+            <Input
+              id="from"
+              type="email"
+              value={from}
+              onChange={(e) => setFrom(e.target.value)}
+              placeholder="ihre-email@example.com"
+            />
+          </div>
+
           <div>
             <Label htmlFor="to">An</Label>
             <Input
@@ -158,7 +174,7 @@ export function InvoiceEmailModal({ invoice, isOpen, onClose, onSend }: InvoiceE
             </Button>
             <Button 
               onClick={handleSend} 
-              disabled={loading || !to || !subject || !message}
+              disabled={loading || !from || !to || !subject || !message}
               className="flex items-center space-x-2"
             >
               <Send className="h-4 w-4" />
