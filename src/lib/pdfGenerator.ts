@@ -314,7 +314,7 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
   const rowHeight = 8;
   
   // Calculate table width to ensure it fits within page margins
-  const tableWidth = Math.min(contentWidth, 145); // Reduced width since we removed the "Betrag" column
+  const tableWidth = Math.min(contentWidth, 165); // Adjusted width for better layout after removing "Betrag" column
   console.log('🔍 Table dimensions:', {
     contentWidth,
     tableWidth,
@@ -333,9 +333,9 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
   
   const columns = [
     { text: 'Pos.', x: margin + 3, width: 15 },
-    { text: 'Beschreibung', x: margin + 20, width: 90 },
-    { text: 'Menge', x: margin + 115, width: 20 },
-    { text: 'Einzelpreis', x: margin + 140, width: 25 }
+    { text: 'Beschreibung', x: margin + 20, width: 100 },
+    { text: 'Menge', x: margin + 125, width: 20 },
+    { text: 'Einzelpreis', x: margin + 150, width: 30 }
   ];
   
   columns.forEach(col => {
@@ -360,15 +360,15 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
     pdf.text((index + 1).toString(), margin + 3, yPosition + 6);
     
     // Description (with text wrapping if needed)
-    const maxDescWidth = 85;
+    const maxDescWidth = 95;
     const descLines = pdf.splitTextToSize(item.description, maxDescWidth);
     pdf.text(descLines[0], margin + 20, yPosition + 6);
     
     // Quantity
-    pdf.text(item.quantity.toString(), margin + 115, yPosition + 6);
+    pdf.text(item.quantity.toString(), margin + 125, yPosition + 6);
     
     // Unit price
-    pdf.text(`CHF ${item.unitPrice.toFixed(2)}`, margin + 140, yPosition + 6);
+    pdf.text(`CHF ${item.unitPrice.toFixed(2)}`, margin + 150, yPosition + 6);
     
     yPosition += rowHeight;
   });
