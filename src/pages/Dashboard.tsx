@@ -8,6 +8,7 @@ import { VendorStats } from "@/components/dashboard/VendorStats";
 import { Invoice } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
 import { useVendor } from "@/contexts/VendorContext";
+import { NotificationCenter } from "@/components/ui/notification-center";
 
 interface SupabaseInvoice {
   id: string;
@@ -125,6 +126,12 @@ export default function Dashboard() {
 
       {/* Recent Invoices */}
       <RecentInvoices invoices={invoices} />
+
+      {/* Notifications */}
+      <div className="space-y-4">
+        <h2 className="text-clamp-lg font-semibold">Benachrichtigungen</h2>
+        <NotificationCenter />
+      </div>
     </div>
   );
 }
