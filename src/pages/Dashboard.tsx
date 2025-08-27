@@ -8,7 +8,7 @@ import { VendorStats } from "@/components/dashboard/VendorStats";
 import { Invoice } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
 import { useVendor } from "@/contexts/VendorContext";
-import { NotificationCenter } from "@/components/ui/notification-center";
+import NotificationCenter from "@/components/ui/notification-center";
 
 interface SupabaseInvoice {
   id: string;
