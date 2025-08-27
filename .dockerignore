@@ -94,15 +94,12 @@ pids
 # Coolify specific
 .coolify
 
-# Supabase Edge Functions (Deno - not compatible with Node.js build)
-# These files cause Coolify to detect this as a Deno project
-supabase/functions/
-supabase/migrations/
-supabase/config.toml
-supabase/
+# Supabase Edge Functions temporarily moved to prevent Deno detection
+# supabase-backup/
 
-# Nixpacks configuration (we want to use our own)
-.nixpacks
+# Build artifacts
+dist/
+build/
 
 # GitHub Actions (no longer needed)
 .github/
