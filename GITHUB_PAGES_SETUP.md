@@ -2,18 +2,18 @@
 
 ## ✅ Deployment Status: COMPLETE
 
-Your system has been successfully deployed to: **https://github.com/tacicek/Rechnung_2.0**
+Your system has been successfully deployed to: **https://github.com/tacicek/core-desk**
 
 ## 🌐 Live URL
 Once GitHub Pages is enabled, your application will be available at:
-**https://tacicek.github.io/Rechnung_2.0/**
+**https://tacicek.github.io/core-desk/**
 
 ## ⚙️ Enable GitHub Pages (Manual Setup Required)
 
 To complete the deployment, please follow these steps:
 
 ### 1. Go to Repository Settings
-- Open https://github.com/tacicek/Rechnung_2.0
+- Open https://github.com/tacicek/core-desk
 - Click on **"Settings"** tab
 - Scroll down to **"Pages"** in the left sidebar
 

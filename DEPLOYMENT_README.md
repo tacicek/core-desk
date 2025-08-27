@@ -49,7 +49,7 @@ This repository has been automatically configured for deployment to GitHub Pages
 
 ## 🌐 **Live Deployment**
 
-**GitHub Pages URL:** https://tacicek.github.io/Rechnung_2.0/
+**GitHub Pages URL:** https://tacicek.github.io/core-desk/
 
 ### 🔄 **Automatic Deployment:**
 - ✅ **GitHub Actions** configured for automatic deployment
@@ -64,8 +64,8 @@ This repository has been automatically configured for deployment to GitHub Pages
 ### For Development:
 ```bash
 # Clone the repository
-git clone https://github.com/tacicek/Rechnung_2.0.git
-cd Rechnung_2.0
+git clone https://github.com/tacicek/core-desk.git
+cd core-desk
 
 # Install dependencies
 npm install
