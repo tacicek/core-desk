@@ -46,8 +46,9 @@ export function VendorProvider({ children }: { children: ReactNode }) {
   const [vendor, setVendor] = useState<Vendor | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
-  console.log('VendorContext state:', { vendor, userProfile, loading, isOwner: userProfile?.is_owner || false });
+  console.log('VendorContext state:', { vendor, userProfile, loading, isOwner: userProfile?.is_owner || false, error });
 
   const refreshVendorData = useCallback(async () => {
     if (!user) {
@@ -57,6 +58,9 @@ export function VendorProvider({ children }: { children: ReactNode }) {
 
     try {
       setLoading(true);
+      setError(null);
+      
+      console.log('Refreshing vendor data for user:', user.id);
       
       // Get user profile with vendor data
       const { data: profile, error: profileError } = await supabase
@@ -72,6 +76,7 @@ export function VendorProvider({ children }: { children: ReactNode }) {
 
       if (profileError) {
         console.error('Error fetching user profile:', profileError);
+        setError(`Error fetching user profile: ${profileError.message}`);
         return;
       }
 
