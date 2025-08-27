@@ -5,8 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useVendor } from '@/contexts/VendorContext';
-import { Loader2, Webhook, ExternalLink, Upload } from 'lucide-react';
-import { InvoiceUploadArea } from './InvoiceUploadArea';
+import { Loader2, Webhook, ExternalLink } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 export const N8nWebhookIntegration = () => {
@@ -315,71 +314,6 @@ export const N8nWebhookIntegration = () => {
     }
   };
 
-  const uploadInvoiceToN8n = async (file: File) => {
-    if (!webhookUrl) {
-      toast({
-        title: "Fehler",
-        description: "N8n Webhook URL eingeben",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      console.log('🔵 Converting file to base64...');
-      
-      // Convert file to base64 for JSON transport through Supabase
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const result = reader.result as string;
-          resolve(result.split(',')[1]); // Remove data:mime/type;base64, prefix
-        };
-        reader.onerror = () => reject(new Error('File read failed'));
-        reader.readAsDataURL(file);
-      });
-
-      console.log('🔵 Uploading via Supabase proxy to avoid CORS...');
-
-      const { data, error } = await supabase.functions.invoke('n8n-webhook', {
-        body: {
-          action: 'upload_invoice_formdata',
-          vendor_id: vendor?.id,
-          n8n_webhook_url: webhookUrl,
-          file: {
-            name: file.name,
-            type: file.type,
-            size: file.size,
-            content: base64
-          }
-        }
-      });
-
-      console.log('🔵 Supabase proxy response:', { data, error });
-
-      if (error) {
-        console.error('🔴 Supabase function error:', error);
-        throw error;
-      }
-
-      if (data?.success) {
-        toast({
-          title: "Fatura erfolgreich verarbeitet",
-          description: `${file.name} wurde erfolgreich analysiert.`,
-        });
-      } else {
-        throw new Error(data?.error || 'Upload failed');
-      }
-    } catch (error) {
-      console.error('🔴 Error uploading invoice:', error);
-      toast({
-        title: "Upload Fehler",
-        description: "Fatura konnte nicht verarbeitet werden.",
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
     <Card>
       <CardHeader>
@@ -458,17 +392,6 @@ export const N8nWebhookIntegration = () => {
             <ExternalLink className="h-4 w-4 mr-2" />
             n8n Docs
           </Button>
-        </div>
-
-        <div className="border-t pt-4">
-          <h4 className="font-medium mb-3 flex items-center gap-2">
-            <Upload className="h-4 w-4" />
-            📄 Fatura Upload & Verarbeitung
-          </h4>
-          <p className="text-sm text-muted-foreground mb-4">
-            Laden Sie eine Fatura hoch und senden Sie sie direkt an n8n zur automatischen Verarbeitung.
-          </p>
-          <InvoiceUploadArea onUpload={uploadInvoiceToN8n} />
         </div>
 
         <div className="bg-muted p-4 rounded-lg">
