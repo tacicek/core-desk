@@ -16,9 +16,62 @@ import { useToast } from "@/hooks/use-toast";
 import { useVendor } from "@/contexts/VendorContext";
 
 export default function NewOfferSimple() {
-  const { vendor, userProfile } = useVendor();
+  const vendorContext = useVendor();
   const navigate = useNavigate();
   const { toast } = useToast();
+  
+  // Add error state
+  const [error, setError] = useState<string | null>(null);
+  
+  console.log('NewOfferSimple component rendered');
+  console.log('Vendor context:', vendorContext);
+  
+  // Check if vendor context is available
+  if (!vendorContext) {
+    console.error('Vendor context is not available');
+    return (
+      <div className="container mx-auto p-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-red-600">Vendor Context Fehler</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">Vendor context ist nicht verfügbar. Bitte laden Sie die Seite neu.</p>
+            <Button onClick={() => window.location.reload()}>
+              Seite neu laden
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+  
+  const { vendor, userProfile } = vendorContext;
+  
+  console.log('Vendor data:', vendor);
+  console.log('User profile:', userProfile);
+  
+  // Add error boundary
+  if (error) {
+    return (
+      <div className="container mx-auto p-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-red-600">Fehler beim Laden der Offerte</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">Ein Fehler ist aufgetreten: {error}</p>
+            <Button onClick={() => {
+              setError(null);
+              window.location.reload();
+            }}>
+              Seite neu laden
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>("");
@@ -42,15 +95,27 @@ export default function NewOfferSimple() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    loadCustomers();
+    try {
+      console.log('NewOfferSimple useEffect - loading customers...');
+      loadCustomers();
+    } catch (error) {
+      console.error('Error in useEffect:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      setError(`Error in useEffect: ${errorMessage}`);
+    }
   }, []);
 
   const loadCustomers = async () => {
     try {
+      console.log('Loading customers...');
       const customerList = await customerStorage.getAll();
+      console.log('Customers loaded:', customerList);
       setCustomers(customerList);
     } catch (error) {
       console.error('Error loading customers:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('Error details:', errorMessage);
+      setError(`Error loading customers: ${errorMessage}`);
     }
   };
 

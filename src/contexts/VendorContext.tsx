@@ -48,6 +48,8 @@ export function VendorProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
+  console.log('VendorProvider rendered');
+  console.log('Auth user:', user);
   console.log('VendorContext state:', { vendor, userProfile, loading, isOwner: userProfile?.is_owner || false, error });
 
   const refreshVendorData = useCallback(async () => {

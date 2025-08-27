@@ -24,13 +24,33 @@ export default function NewOffer() {
   // Add error state
   const [error, setError] = useState<string | null>(null);
   
+  console.log('NewOffer component rendered');
+  console.log('Vendor context:', vendorContext);
+  
   // Check if vendor context is available
   if (!vendorContext) {
-    setError('Vendor context is not available');
-    return null;
+    console.error('Vendor context is not available');
+    return (
+      <div className="container mx-auto p-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-red-600">Vendor Context Fehler</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">Vendor context ist nicht verfügbar. Bitte laden Sie die Seite neu.</p>
+            <Button onClick={() => window.location.reload()}>
+              Seite neu laden
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
   
   const { vendor, userProfile } = vendorContext;
+  
+  console.log('Vendor data:', vendor);
+  console.log('User profile:', userProfile);
   
   // Add error boundary
   if (error) {
