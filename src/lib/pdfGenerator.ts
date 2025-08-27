@@ -314,7 +314,7 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
   const rowHeight = 8;
   
   // Calculate table width to ensure it fits within page margins
-  const tableWidth = Math.min(contentWidth, 170); // Limit table width to prevent overflow
+  const tableWidth = Math.min(contentWidth, 145); // Reduced width since we removed the "Betrag" column
   console.log('🔍 Table dimensions:', {
     contentWidth,
     tableWidth,
@@ -335,8 +335,7 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
     { text: 'Pos.', x: margin + 3, width: 15 },
     { text: 'Beschreibung', x: margin + 20, width: 90 },
     { text: 'Menge', x: margin + 115, width: 20 },
-    { text: 'Einzelpreis', x: margin + 140, width: 25 },
-    { text: 'Betrag', x: margin + 170, width: 25 }
+    { text: 'Einzelpreis', x: margin + 140, width: 25 }
   ];
   
   columns.forEach(col => {
@@ -370,10 +369,6 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
     
     // Unit price
     pdf.text(`CHF ${item.unitPrice.toFixed(2)}`, margin + 140, yPosition + 6);
-    
-    // Total
-    pdf.setFont('helvetica', 'bold');
-    pdf.text(`CHF ${item.total.toFixed(2)}`, margin + 170, yPosition + 6);
     
     yPosition += rowHeight;
   });
